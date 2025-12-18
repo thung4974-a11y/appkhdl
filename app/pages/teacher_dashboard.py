@@ -6,7 +6,7 @@ from components.charts import show_dashboard, show_charts
 from components.tables import manage_grades_new, show_ranking
 from components.forms import add_grade_form, import_data, export_data, clean_data_page, manage_users
 
-def teacher_dashboard(connconn, df):
+def teacher_dashboard(connconn):
     st.sidebar.title(f"{st.session_state.get('fullname','')}")
     st.sidebar.write("Vai trò: **Giáo viên**")
     
@@ -47,6 +47,7 @@ def teacher_dashboard(connconn, df):
         manage_users(conn)
     elif menu == "Biểu đồ phân tích":
         show_charts(df)
+
 
 
 
