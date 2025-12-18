@@ -167,52 +167,70 @@ def export_data(df):
     st.download_button("Tải file CSV", csv, "student_grades.csv", "text/csv")
 
 def clean_data_page(conn, df):
-    st.title("Làm sạch dữ liệu")
-    
+    st.title("Làm sạch & chuẩn hoá dữ liệu học tập")
+
     st.subheader("Phân tích dữ liệu hiện tại")
-    
-    duplicate_semester = int(df.duplicated(subset=['mssv', 'semester'], keep='first').sum()) if not df.empty else 0
-    
-    duplicate_name = 0
-    if not df.empty:
-        name_conflict_groups = df.groupby("mssv")["student_name"].nunique()
-        duplicate_name = int((name_conflict_groups > 1).sum())
-    
-    negative_count = 0
+
+    if df.empty:
+        st.warning("Chưa có dữ liệu để phân tích.")
+        return
+
+    # Trùng MSSV + học kỳ + năm học
+    duplicate_count = int(
+        df.duplicated(subset=["mssv", "semester", "academic_year"], keep="first").sum()
+    )
+
+    # Điểm ngoài miền [0,10]
+    invalid_score_count = 0
     for key in SUBJECTS.keys():
         if key in df.columns:
-            negative_count += int((pd.to_numeric(df[key], errors='coerce') < 0).sum())
-    
+            invalid_score_count += int(
+                (~pd.to_numeric(df[key], errors="coerce").between(0, 10)).sum()
+            )
+
     col1, col2 = st.columns(2)
+
     with col1:
-        if duplicate_semester > 0 or duplicate_name > 0:
-            st.error(f"- {duplicate_semester} bản ghi trùng **MSSV + Học kỳ**\n- {duplicate_name} MSSV có **nhiều tên khác nhau**")
+        if duplicate_count > 0:
+            st.error(f"Có **{duplicate_count}** bản ghi trùng (MSSV + Học kỳ + Năm học)")
         else:
-            st.success("Không có bản ghi trùng lặp")
-    
+            st.success("Không có bản ghi trùng")
+
     with col2:
-        if negative_count > 0:
-            st.error(f"Có **{negative_count}** điểm âm (không hợp lệ)")
+        if invalid_score_count > 0:
+            st.error(f"Có **{invalid_score_count}** điểm ngoài miền [0,10]")
         else:
-            st.success("Không có điểm âm")
-    
+            st.success("Tất cả điểm hợp lệ")
+
     st.divider()
-    
-    st.subheader("Thực hiện làm sạch")
-    st.write("- Xóa các bản ghi trùng **MSSV + Học kỳ**")
-    st.write("- Xóa các bản ghi **MSSV có nhiều tên**")
-    st.write("- Xóa các điểm có giá trị âm")
-    st.write("- Tính lại điểm TB và xếp loại")
-    
-    if st.button("Làm sạch dữ liệu", type="primary", 
-                 disabled=(duplicate_semester == 0 and duplicate_name == 0 and negative_count == 0)):
+
+    st.subheader("Các bước làm sạch sẽ thực hiện")
+    st.write("- Loại bỏ bản ghi trùng **MSSV + Học kỳ + Năm học**")
+    st.write("- Chuẩn hoá điểm về miền **[0,10]** (loại giá trị không hợp lệ)")
+    st.write("- Tính lại điểm trung bình và xếp loại")
+    st.write(f"- Áp dụng cho **năm học {ACADEMIC_YEAR}**")
+
+    if st.button(
+        "Làm sạch dữ liệu",
+        type="primary",
+        disabled=(duplicate_count == 0 and invalid_score_count == 0)
+    ):
         try:
             from database.clean import clean_data
-            duplicates_removed, name_removed, negatives_fixed = clean_data(conn)
-            st.success(f"Hoàn thành!\n- Xóa {duplicates_removed} bản ghi trùng\n- Xóa {name_removed} bản ghi do MSSV có nhiều tên\n- Sửa {negatives_fixed} điểm âm.")
+
+            removed_duplicates, invalid_scores, removed_rows = clean_data(conn)
+
+            st.success(
+                "Hoàn thành làm sạch dữ liệu!\n\n"
+                f"- Đã loại bỏ **{removed_duplicates}** bản ghi trùng\n"
+                f"- Đã xử lý **{invalid_scores}** điểm không hợp lệ\n"
+                f"- Tổng số bản ghi bị ảnh hưởng: **{removed_rows}**"
+            )
             st.rerun()
+
         except Exception as e:
-            st.error(f"Lỗi khi làm sạch: {e}")
+            st.error(f"Lỗi khi làm sạch dữ liệu: {e}")
+
 
 def manage_users(conn):
     st.title("Quản lý tài khoản")
@@ -255,3 +273,4 @@ def manage_users(conn):
                 st.rerun()
             else:
                 st.error("Username đã tồn tại!")
+
