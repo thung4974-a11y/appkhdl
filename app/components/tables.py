@@ -96,7 +96,7 @@ def show_ranking(df):
         excellent_count = len(ranking_df[ranking_df['xep_loai'].isin(['Giỏi', 'Xuất sắc'])])
         st.metric("Số SV Giỏi/Xuất sắc", excellent_count)
 
-def manage_grades_new(conn, df):
+def manage_grades_new(conn):
     st.title("Quản lý điểm sinh viên")
 
     if df.empty:
@@ -196,4 +196,5 @@ def manage_grades_new(conn, df):
                     delete_grades_batch(conn, del_ids)
                     st.success(f"Đã xóa {len(del_ids)} bản ghi!")
                     st.rerun()
+
 
