@@ -29,24 +29,39 @@ LOGIN_PAGE_BG = """
 
 LOGIN_FORM_CSS = """
 <style>
-h1, h2 { text-align: center !important; }
-input[type="text"], input[type="password"] {
+
+/* Center title */
+h1, h2 {
+    text-align: center !important;
+}
+
+/* Input fields */
+div[data-testid="stTextInput"] input,
+div[data-testid="stPassword"] input {
     background-color: white !important;
     color: black !important;
-    border-radius: 8px;
+    border-radius: 8px !important;
     border: 1px solid #cccccc !important;
 }
-button[kind="primary"] {
+
+/* Buttons */
+div[data-testid="stButton"] > button {
     background-color: white !important;
     color: black !important;
     border-radius: 8px !important;
     border: none !important;
     font-weight: bold !important;
+    transition: all 0.25s ease-in-out;
 }
-button[kind="primary"]:hover {
+
+/* Hover effect */
+div[data-testid="stButton"] > button:hover {
     background-color: #e6e6e6 !important;
-    color: black !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
 }
+
 </style>
 """
+
 
