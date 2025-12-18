@@ -33,11 +33,12 @@ def main():
         login_page(conn)
     else:
         if st.session_state.get('role') == 'teacher':
-            teacher_dashboard(conn)
+            teacher_dashboard(connconn, df)
         else:
             student_dashboard(conn)
 
 if __name__ == "__main__":
     main()
+
 
 
