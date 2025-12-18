@@ -96,7 +96,7 @@ def show_ranking(df):
         excellent_count = len(ranking_df[ranking_df['xep_loai'].isin(['Giỏi', 'Xuất sắc'])])
         st.metric("Số SV Giỏi/Xuất sắc", excellent_count)
 
-def manage_grades_new(conn):
+def manage_grades_new(conn, df):
     st.title("Quản lý điểm sinh viên")
 
     if df.empty:
@@ -154,28 +154,21 @@ def manage_grades_new(conn):
         show_delete = st.checkbox("Hiển thị chức năng Xóa điểm", value=True)
 
     if search_term:
-    search_results = df[
-        df['mssv'].astype(str).str.contains(search_term, case=False, na=False) |
-        df['student_name'].str.contains(search_term, case=False, na=False)
-    ]
-    if not search_results.empty:
-        st.success(f"Tìm thấy {len(search_results)} bản ghi")
-        subject_cols = [k for k in SUBJECTS.keys() if k in search_results.columns]
-        display_cols = ['mssv', 'student_name', 'class_name', 'semester'] + subject_cols + ['diem_tb', 'xep_loai']
-        result_df = search_results[display_cols]
-        # Có thể đổi tên cột nếu muốn hiển thị đẹp
-        st.dataframe(result_df, use_container_width=True, hide_index=True)
+        search_results = df[
+            df['mssv'].astype(str).str.contains(search_term, case=False, na=False) |
+            df['student_name'].str.contains(search_term, case=False, na=False)
+        ]
+        if not search_results.empty:
+            st.success(f"Tìm thấy {len(search_results)} bản ghi")
+            result_df = search_results[['mssv', 'student_name', 'class_name', 'semester', 'diem_tb', 'xep_loai']]
+            result_df.columns = ['MSSV', 'Họ tên', 'Lớp', 'Học kỳ', 'Điểm TB', 'Xếp loại']
+            st.dataframe(result_df, use_container_width=True, hide_index=True)
         else:
             st.warning("Không tìm thấy sinh viên phù hợp.")
 
     if show_delete:
         st.divider()
         st.subheader("Xóa điểm sinh viên")
-        # Kiểm tra df có cột 'id' chưa, nếu chưa load thêm từ DB
-        if 'id' not in df.columns:
-            st.warning("Cột 'id' chưa có, chức năng xóa sẽ không hoạt động.")
-            return
-
         delete_options = {
             row['id']: f"{row['mssv']} - {row['student_name']} - HK{int(row['semester'])} - ĐTB {row['diem_tb']:.2f}"
             for _, row in df.iterrows()
@@ -196,5 +189,3 @@ def manage_grades_new(conn):
                     delete_grades_batch(conn, del_ids)
                     st.success(f"Đã xóa {len(del_ids)} bản ghi!")
                     st.rerun()
-
-
