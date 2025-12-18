@@ -154,20 +154,17 @@ def manage_grades_new(conn, df):
         show_delete = st.checkbox("Hiển thị chức năng Xóa điểm", value=True)
 
     if search_term:
-        # Tìm kiếm MSSV hoặc tên
-        search_results = df[
-            df['mssv'].astype(str).str.contains(search_term, case=False, na=False) |
-            df['student_name'].str.contains(search_term, case=False, na=False)
-        ]
-        if not search_results.empty:
-            st.success(f"Tìm thấy {len(search_results)} bản ghi")
-
-            # Hiển thị bảng chi tiết tất cả các môn
-            display_cols = ['mssv', 'student_name', 'class_name', 'semester'] + list(SUBJECTS.keys()) + ['diem_tb', 'xep_loai']
-            result_df = search_results[display_cols]
-            result_df.columns = ['MSSV', 'Họ tên', 'Lớp', 'Học kỳ'] + [SUBJECTS[k]['name'] for k in SUBJECTS.keys()] + ['Điểm TB', 'Xếp loại']
-
-            st.dataframe(result_df, use_container_width=True, hide_index=True)
+    search_results = df[
+        df['mssv'].astype(str).str.contains(search_term, case=False, na=False) |
+        df['student_name'].str.contains(search_term, case=False, na=False)
+    ]
+    if not search_results.empty:
+        st.success(f"Tìm thấy {len(search_results)} bản ghi")
+        subject_cols = [k for k in SUBJECTS.keys() if k in search_results.columns]
+        display_cols = ['mssv', 'student_name', 'class_name', 'semester'] + subject_cols + ['diem_tb', 'xep_loai']
+        result_df = search_results[display_cols]
+        # Có thể đổi tên cột nếu muốn hiển thị đẹp
+        st.dataframe(result_df, use_container_width=True, hide_index=True)
         else:
             st.warning("Không tìm thấy sinh viên phù hợp.")
 
@@ -199,3 +196,4 @@ def manage_grades_new(conn, df):
                     delete_grades_batch(conn, del_ids)
                     st.success(f"Đã xóa {len(del_ids)} bản ghi!")
                     st.rerun()
+
