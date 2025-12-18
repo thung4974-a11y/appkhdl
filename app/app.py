@@ -11,24 +11,24 @@ st.set_page_config(
     layout="wide"
 )
 
-# Ẩn sidebar mặc định
+# CSS CHÍNH (LOAD SỚM)
+st.markdown(PREMIUM_SIDEBAR, unsafe_allow_html=True)
+
+# Ẩn sidebar nav
 st.markdown("""
 <style>
-[data-testid="stSidebarNav"] {
+section[data-testid="stSidebar"] nav {
     display: none;
 }
 </style>
 """, unsafe_allow_html=True)
 
 def main():
-    # Apply styles
-    st.markdown(PREMIUM_SIDEBAR, unsafe_allow_html=True)
-    
     conn = init_db()
-    
+
     if 'logged_in' not in st.session_state:
         st.session_state.logged_in = False
-    
+
     if not st.session_state.logged_in:
         login_page(conn)
     else:
@@ -39,6 +39,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
