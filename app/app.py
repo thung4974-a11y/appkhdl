@@ -7,7 +7,7 @@ from pages.student_dashboard import student_dashboard
 
 st.set_page_config(
     page_title="Quản lý điểm sinh viên", 
-    page_icon="logotl.jpg",
+    page_icon="https://raw.githubusercontent.com/thung4974-a11y/appkhdl/main/app/logotl.jpg",
     layout="wide"
 )
 
@@ -39,5 +39,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
