@@ -154,14 +154,19 @@ def manage_grades_new(conn, df):
         show_delete = st.checkbox("Hiển thị chức năng Xóa điểm", value=True)
 
     if search_term:
+        # Tìm kiếm MSSV hoặc tên
         search_results = df[
             df['mssv'].astype(str).str.contains(search_term, case=False, na=False) |
             df['student_name'].str.contains(search_term, case=False, na=False)
         ]
         if not search_results.empty:
             st.success(f"Tìm thấy {len(search_results)} bản ghi")
-            result_df = search_results[['mssv', 'student_name', 'class_name', 'semester', 'diem_tb', 'xep_loai']]
-            result_df.columns = ['MSSV', 'Họ tên', 'Lớp', 'Học kỳ', 'Điểm TB', 'Xếp loại']
+
+            # Hiển thị bảng chi tiết tất cả các môn
+            display_cols = ['mssv', 'student_name', 'class_name', 'semester'] + list(SUBJECTS.keys()) + ['diem_tb', 'xep_loai']
+            result_df = search_results[display_cols]
+            result_df.columns = ['MSSV', 'Họ tên', 'Lớp', 'Học kỳ'] + [SUBJECTS[k]['name'] for k in SUBJECTS.keys()] + ['Điểm TB', 'Xếp loại']
+
             st.dataframe(result_df, use_container_width=True, hide_index=True)
         else:
             st.warning("Không tìm thấy sinh viên phù hợp.")
@@ -169,6 +174,11 @@ def manage_grades_new(conn, df):
     if show_delete:
         st.divider()
         st.subheader("Xóa điểm sinh viên")
+        # Kiểm tra df có cột 'id' chưa, nếu chưa load thêm từ DB
+        if 'id' not in df.columns:
+            st.warning("Cột 'id' chưa có, chức năng xóa sẽ không hoạt động.")
+            return
+
         delete_options = {
             row['id']: f"{row['mssv']} - {row['student_name']} - HK{int(row['semester'])} - ĐTB {row['diem_tb']:.2f}"
             for _, row in df.iterrows()
