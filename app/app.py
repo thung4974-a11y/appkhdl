@@ -7,6 +7,14 @@ from pages.login import login_page
 from pages.teacher_dashboard import teacher_dashboard
 from pages.student_dashboard import student_dashboard
 
+st.markdown("""
+<style>
+[data-testid="stSidebarNav"] {
+    display: none;
+}
+</style>
+""", unsafe_allow_html=True)
+
 def main():
     st.set_page_config(
         page_title="Quản lý điểm sinh viên", 
@@ -35,3 +43,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
