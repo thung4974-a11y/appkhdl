@@ -32,7 +32,7 @@ def teacher_dashboard(connconn, df):
     if menu == "Dashboard":
         show_dashboard(df)
     elif menu == "Quản lý điểm":
-        manage_grades_new(conn)
+        manage_grades_new(connconn, df)
     elif menu == "Xếp hạng theo GPA":
         show_ranking(df)
     elif menu == "Thêm điểm":
@@ -47,5 +47,6 @@ def teacher_dashboard(connconn, df):
         manage_users(conn)
     elif menu == "Biểu đồ phân tích":
         show_charts(df)
+
 
 
