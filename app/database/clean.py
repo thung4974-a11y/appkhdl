@@ -8,12 +8,12 @@ from utils.calculations import calculate_average, calculate_grade
 
 
 def normalize_score(value):
-    try:
-        value = float(value)
-        if value < 0 or value > 10:
-            return None
-        return round(value, 2)
-    except:
+     try:
+        score = float(value)
+        if 0 <= score <= 10:
+            return round(score, 2)
+        return None
+    except (ValueError, TypeError):
         return None
 
 
@@ -95,3 +95,4 @@ def clean_data(conn):
         raise
 
     return removed_duplicates, invalid_score_count, original_count - len(df_clean)
+
