@@ -1,5 +1,3 @@
-# config/settings.py
-
 SUBJECTS = {
     'triet': {'name': 'Triết', 'counts_gpa': True, 'semester': 1},
     'giai_tich_1': {'name': 'Giải tích 1', 'counts_gpa': True, 'semester': 1, 'mandatory': True},
