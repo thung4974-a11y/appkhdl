@@ -181,14 +181,6 @@ def clean_data_page(conn, df):
     # MSSV có nhiều tên khác nhau
     name_conflict_count = int((df.groupby("mssv")["student_name"].nunique() > 1).sum())
 
-    # Điểm ngoài miền [0,10]
-    invalid_score_count = 0
-    for key in SUBJECTS.keys():
-        if key in df.columns:
-            invalid_score_count += int(
-                (~pd.to_numeric(df[key], errors="coerce").between(0, 10)).sum()
-            )
-
     col1, col2 = st.columns(2)
     with col1:
         if duplicate_count > 0 or name_conflict_count > 0:
@@ -196,35 +188,27 @@ def clean_data_page(conn, df):
         else:
             st.success("Không có bản ghi trùng và MSSV có nhiều tên khác nhau")
 
-    with col2:
-        if invalid_score_count > 0:
-            st.error(f"Có **{invalid_score_count}** điểm ngoài miền [0,10]")
-        else:
-            st.success("Tất cả điểm hợp lệ")
-
     st.divider()
 
     st.subheader("Các bước làm sạch sẽ thực hiện")
     st.write("- Loại bỏ bản ghi trùng **MSSV + Học kỳ + Năm học**")
     st.write("- Xử lý MSSV có nhiều tên khác nhau (giữ bản ghi đầu tiên)")
-    st.write("- Chuẩn hoá điểm về miền **[0,10]** (loại giá trị không hợp lệ)")
     st.write("- Tính lại điểm trung bình và xếp loại")
 
     if st.button(
         "Làm sạch dữ liệu",
         type="primary",
-        disabled=(duplicate_count == 0 and name_conflict_count == 0 and invalid_score_count == 0)
+        disabled=(duplicate_count == 0 and name_conflict_count == 0)
     ):
         try:
             from database.clean import clean_data
 
-            removed_duplicates, removed_name_conflict, invalid_scores = clean_data(conn)
+            removed_duplicates, removed_name_conflict, _ = clean_data(conn)
 
             st.success(
                 "Hoàn thành làm sạch dữ liệu!\n\n"
                 f"- Đã loại bỏ **{removed_duplicates}** bản ghi trùng\n"
-                f"- Đã loại bỏ **{removed_name_conflict}** bản ghi do MSSV có nhiều tên\n"
-                f"- Đã xử lý **{invalid_scores}** điểm không hợp lệ"
+                f"- Đã loại bỏ **{removed_name_conflict}** bản ghi do MSSV có nhiều tên"
             )
             st.rerun()
 
@@ -272,5 +256,6 @@ def manage_users(conn):
                 st.rerun()
             else:
                 st.error("Username đã tồn tại!")
+
 
 
