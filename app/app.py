@@ -5,10 +5,9 @@ from pages.login import login_page
 from pages.teacher_dashboard import teacher_dashboard
 from pages.student_dashboard import student_dashboard
 
-# ✅ PHẢI ĐẶT TRÊN CÙNG
 st.set_page_config(
     page_title="Quản lý điểm sinh viên", 
-    page_icon="📚", 
+    page_icon="logotl.jpg"
     layout="wide"
 )
 
@@ -40,3 +39,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
