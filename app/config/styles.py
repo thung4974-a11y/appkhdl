@@ -10,7 +10,6 @@ PREMIUM_SIDEBAR = """
     box-shadow: 4px 0 25px rgba(0,0,0,0.55);
     padding-top: 20px !important;
 }
-/* ... copy toàn bộ CSS từ file gốc ... */
 </style>
 """
 
@@ -50,3 +49,4 @@ button[kind="primary"]:hover {
 }
 </style>
 """
+
