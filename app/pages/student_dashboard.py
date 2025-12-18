@@ -32,7 +32,7 @@ def student_dashboard(conn):
     st.sidebar.title(f"{st.session_state.get('fullname','')}")
     st.sidebar.write("Vai trò: **Học sinh**")
     
-    if st.sidebar.button("Đăng xuất"):
+    if st.sidebar.button("Đăng xuất",type="primary"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.rerun()
@@ -124,3 +124,4 @@ def student_dashboard(conn):
             
             fig = px.pie(df, names='xep_loai', title='Phân bố xếp loại')
             st.plotly_chart(fig, use_container_width=True)
+
