@@ -44,23 +44,32 @@ def show_dashboard(df):
         st.plotly_chart(fig, use_container_width=True)
 
 def show_charts(df):
-    st.title("Biểu đồ phân tích")
-    
+    st.title("Biểu đồ phân tích điểm sinh viên")
+
     if df.empty:
         st.warning("Chưa có dữ liệu để phân tích.")
         return
-    
+
+    # 1️ Điểm trung bình theo lớp (Bar Chart)
     st.subheader("Điểm trung bình theo lớp")
     class_avg = df.groupby('class_name')['diem_tb'].mean().reset_index()
-    fig1 = px.bar(class_avg, x='class_name', y='diem_tb', 
-                  title='Điểm TB theo lớp', color='diem_tb',
-                  labels={'class_name': 'Lớp', 'diem_tb': 'Điểm TB'})
+    fig1 = px.bar(
+        class_avg, x='class_name', y='diem_tb',
+        title='Điểm TB trung bình theo lớp',
+        color='diem_tb', text='diem_tb',
+        labels={'class_name':'Lớp', 'diem_tb':'Điểm TB'}
+    )
+    fig1.update_layout(coloraxis_showscale=False)
     st.plotly_chart(fig1, use_container_width=True)
-    
-    st.subheader("Phân bố xếp loại")
-    fig2 = px.pie(df, names='xep_loai', title='Tỷ lệ xếp loại học lực')
+
+    # 2️ Phân bố xếp loại (Pie Chart)
+    st.subheader("Tỷ lệ xếp loại sinh viên")
+    fig2 = px.pie(
+        df, names='xep_loai', title='Tỷ lệ xếp loại học lực', hole=0.3
+    )
     st.plotly_chart(fig2, use_container_width=True)
-    
+
+    # 3 Điểm trung bình các môn học (Line Chart)
     st.subheader("Điểm trung bình các môn học")
     subject_avg = []
     for key, info in SUBJECTS.items():
@@ -68,19 +77,32 @@ def show_charts(df):
             avg = pd.to_numeric(df[key], errors='coerce').mean()
             if pd.notna(avg):
                 subject_avg.append({'Môn': info['name'], 'Điểm TB': float(avg)})
-    
+
     if subject_avg:
         subject_df = pd.DataFrame(subject_avg)
-        fig3 = px.line(subject_df, x='Môn', y='Điểm TB', markers=True, title='Điểm TB các môn')
+        fig3 = px.line(
+            subject_df, x='Môn', y='Điểm TB', markers=True,
+            title='Điểm TB trung bình các môn học',
+            text='Điểm TB'
+        )
         st.plotly_chart(fig3, use_container_width=True)
-    
-    st.subheader("So sánh theo học kỳ")
+
+    # 4️ Điểm TB theo học kỳ (Bar Chart)
+    st.subheader("Điểm trung bình theo học kỳ")
     semester_avg = df.groupby('semester')['diem_tb'].mean().reset_index()
-    semester_avg['semester'] = semester_avg['semester'].map({1: 'Học kỳ 1', 2: 'Học kỳ 2'})
-    fig4 = px.bar(semester_avg, x='semester', y='diem_tb', 
-                  title='Điểm TB theo học kỳ', color='diem_tb')
+    semester_avg['Học kỳ'] = semester_avg['semester'].map({1: 'Học kỳ 1', 2: 'Học kỳ 2'})
+    fig4 = px.bar(
+        semester_avg, x='Học kỳ', y='diem_tb', color='diem_tb',
+        title='Điểm TB trung bình theo học kỳ', text='diem_tb',
+        labels={'diem_tb':'Điểm TB'}
+    )
+    fig4.update_layout(coloraxis_showscale=False)
     st.plotly_chart(fig4, use_container_width=True)
-    
+
+    # 5️ Phân bố điểm TB (Histogram)
     st.subheader("Phân bố điểm trung bình")
-    fig5 = px.histogram(df, x='diem_tb', nbins=20, title='Phân bố điểm TB')
+    fig5 = px.histogram(
+        df, x='diem_tb', nbins=20, title='Phân bố điểm TB',
+        labels={'diem_tb':'Điểm TB'}, color_discrete_sequence=['#0abde3']
+    )
     st.plotly_chart(fig5, use_container_width=True)
