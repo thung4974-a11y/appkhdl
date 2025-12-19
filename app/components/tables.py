@@ -1,11 +1,12 @@
 # components/tables.py
+import numpy as nd
 import datetime
-from datetime import datetime, date, timedelta
 import streamlit as st
 import pandas as pd
 from utils.calculations import calculate_grade, get_ranking_by_semester
 from database.grades import delete_grade, delete_grades_batch
 from config.settings import SUBJECTS, SEMESTER_1_SUBJECTS, SEMESTER_2_SUBJECTS, ACADEMIC_YEAR
+from datetime import datetime, date, timedelta
 
 def show_ranking(df):
     st.title("Xếp hạng theo điểm GPA")
@@ -298,5 +299,6 @@ def manage_grades_new(conn, df):
                     delete_grades_batch(conn, del_ids)
                     st.success(f"Đã xóa {len(del_ids)} bản ghi!")
                     st.rerun()
+
 
 
