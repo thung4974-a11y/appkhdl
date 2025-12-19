@@ -112,6 +112,7 @@ def manage_grades_new(conn, df):
         horizontal=True
     )
 
+    # Lọc dữ liệu theo học kỳ
     if semester_filter == 'Học kỳ 1':
         filtered_df = df[df['semester'] == 1].copy()
     elif semester_filter == 'Học kỳ 2':
@@ -136,6 +137,7 @@ def manage_grades_new(conn, df):
     else:
         filtered_df = df.copy()
 
+    # Hiển thị bảng chính
     if not filtered_df.empty:
         if semester_filter == 'Tổng hợp':
             display_df = filtered_df[['mssv', 'student_name', 'class_name', 'diem_tb_hk1', 'diem_tb_hk2', 'diem_tb', 'xep_loai']]
@@ -143,32 +145,28 @@ def manage_grades_new(conn, df):
         else:
             display_df = filtered_df[['mssv', 'student_name', 'class_name', 'semester', 'diem_tb', 'xep_loai']]
             display_df.columns = ['MSSV', 'Họ tên', 'Lớp', 'Học kỳ', 'Điểm TB', 'Xếp loại']
-        st.dataframe(display_df, use_container_width=True, hide_index=True)
+        st.dataframe(display_df.sort_values('MSSV'), use_container_width=True, hide_index=True)
         st.caption(f"Tổng số: {len(display_df)} bản ghi")
     else:
         st.info("Không có dữ liệu phù hợp.")
 
     st.divider()
 
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        search_term = st.text_input("Tìm kiếm sinh viên (MSSV hoặc Tên)")
-    with col2:
-        show_delete = st.checkbox("Hiển thị chức năng Xóa điểm", value=True)
-
-    if search_term:
-        search_results = df[
-            df['mssv'].astype(str).str.contains(search_term, case=False, na=False) |
-            df['student_name'].str.contains(search_term, case=False, na=False)
-        ]
+    # Tìm kiếm theo MSSV
+    search_mssv = st.text_input("Tìm kiếm sinh viên theo MSSV")
+    if search_mssv:
+        search_results = df[df['mssv'].astype(str) == search_mssv]
         if not search_results.empty:
-            st.success(f"Tìm thấy {len(search_results)} bản ghi")
-            result_df = search_results[['mssv', 'student_name', 'class_name', 'semester', 'diem_tb', 'xep_loai']]
-            result_df.columns = ['MSSV', 'Họ tên', 'Lớp', 'Học kỳ', 'Điểm TB', 'Xếp loại']
-            st.dataframe(result_df, use_container_width=True, hide_index=True)
+            st.success(f"Tìm thấy {len(search_results)} bản ghi cho MSSV {search_mssv}")
+            # Hiển thị bảng đầy đủ theo thứ tự học kỳ
+            search_display = search_results.sort_values('semester')[['mssv', 'student_name', 'class_name', 'semester', 'diem_tb', 'xep_loai']]
+            search_display.columns = ['MSSV', 'Họ tên', 'Lớp', 'Học kỳ', 'Điểm TB', 'Xếp loại']
+            st.dataframe(search_display, use_container_width=True, hide_index=True)
         else:
-            st.warning("Không tìm thấy sinh viên phù hợp.")
+            st.warning(f"Không tìm thấy sinh viên có MSSV {search_mssv}")
 
+    # Xóa điểm
+    show_delete = st.checkbox("Hiển thị chức năng Xóa điểm", value=True)
     if show_delete:
         st.divider()
         st.subheader("Xóa điểm sinh viên")
