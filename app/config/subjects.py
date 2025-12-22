@@ -23,4 +23,3 @@ NEXT_SUBJECTS = {
 SEMESTER_1_SUBJECTS = ['triet', 'giai_tich_1', 'tieng_an_do_1', 'gdtc', 'thvp']
 SEMESTER_2_SUBJECTS = ['giai_tich_2', 'tieng_an_do_2', 'tvth', 'phap_luat', 'logic']
 ACADEMIC_YEAR = 1
-DB_PATH = 'student_grades.db'
