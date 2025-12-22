@@ -9,8 +9,8 @@ def calculate_grade(score):
         s = float(score)
     except Exception:
         s = 0.0
-    if s >= 9.5: return 'Xuất sắc'
-    elif s >= 8.5: return 'Giỏi'
+    if s >= 9.0: return 'Xuất sắc'
+    elif s >= 8.0: return 'Giỏi'
     elif s >= 7.0: return 'Khá'
     elif s >= 5.5: return 'Trung bình'
     elif s >= 4.0: return 'Yếu'
@@ -68,3 +68,4 @@ def get_ranking_by_semester(df, semester=None):
         semester_df = semester_df.sort_values('diem_tb', ascending=False).reset_index(drop=True)
         semester_df['xep_hang'] = range(1, len(semester_df) + 1)
         return semester_df
+
