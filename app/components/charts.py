@@ -69,25 +69,7 @@ def show_charts(df):
     )
     st.plotly_chart(fig2, use_container_width=True)
 
-    # # 3 Điểm trung bình các môn học (Line Chart)
-    # st.subheader("Điểm trung bình các môn học")
-    # subject_avg = []
-    # for key, info in SUBJECTS.items():
-    #     if info['counts_gpa'] and key in df.columns:
-    #         avg = pd.to_numeric(df[key], errors='coerce').mean()
-    #         if pd.notna(avg):
-    #             subject_avg.append({'Môn': info['name'], 'Điểm TB': float(avg)})
-
-    # if subject_avg:
-    #     subject_df = pd.DataFrame(subject_avg)
-    #     fig3 = px.line(
-    #         subject_df, x='Môn', y='Điểm TB', markers=True,
-    #         title='Điểm TB trung bình các môn học',
-    #         text='Điểm TB'
-    #     )
-    #     st.plotly_chart(fig3, use_container_width=True)
-
-    # 4️ Điểm TB theo học kỳ (Bar Chart)
+    # 3 Điểm TB theo học kỳ (Bar Chart)
     st.subheader("Điểm trung bình theo học kỳ")
     semester_avg = df.groupby('semester')['diem_tb'].mean().reset_index()
     semester_avg['Học kỳ'] = semester_avg['semester'].map({1: 'Học kỳ 1', 2: 'Học kỳ 2'})
@@ -99,11 +81,12 @@ def show_charts(df):
     fig4.update_layout(coloraxis_showscale=False)
     st.plotly_chart(fig4, use_container_width=True)
 
-    # 5️ Phân bố điểm TB (Histogram)
+    # 4Phân bố điểm TB (Histogram)
     st.subheader("Phân bố điểm trung bình")
     fig5 = px.histogram(
         df, x='diem_tb', nbins=20, title='Phân bố điểm TB',
         labels={'diem_tb':'Điểm TB'}, color_discrete_sequence=['#0abde3']
     )
     st.plotly_chart(fig5, use_container_width=True)
+
 
